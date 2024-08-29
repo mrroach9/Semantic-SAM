@@ -20,7 +20,7 @@ from tasks.interactive_idino_m2m_auto import show_anns
 from tasks.interactive_predictor import SemanticSAMPredictor
 
 
-def prepare_image(image_pth):
+def prepare_image(image_pth, device):
     """
     apply transformation to the image. crop the image ot 640 short edge by default
     """
@@ -31,12 +31,12 @@ def prepare_image(image_pth):
     image_ori = transform1(image)
 
     image_ori = np.asarray(image_ori)
-    images = torch.from_numpy(image_ori.copy()).permute(2, 0, 1).cuda()
+    images = torch.from_numpy(image_ori.copy()).permute(2, 0, 1).to(device)
 
     return image_ori, images
 
 
-def build_semantic_sam(model_type, ckpt):
+def build_semantic_sam(model_type, ckpt, device):
     """
     build model
     """
@@ -45,7 +45,7 @@ def build_semantic_sam(model_type, ckpt):
 
     sam_cfg=cfgs[model_type]
     opt = load_opt_from_config_file(sam_cfg)
-    model_semantic_sam = BaseModel(opt, build_model(opt)).from_pretrained(ckpt).eval().cuda()
+    model_semantic_sam = BaseModel(opt, build_model(opt)).from_pretrained(ckpt).eval().to(device)
     return model_semantic_sam
 
 
